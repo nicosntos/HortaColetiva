@@ -1,0 +1,26 @@
+# Arquivos do Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+
+# Ambiente virtual
+venv/
+env/
+
+# Django
+staticfiles/
+media/
+
+# Configuração local
+*.env
+
+# VSCode
+.vscode/
+
+# Logs
+*.log
+
+# Node (caso use Tailwind/JS)
+node_modules/
