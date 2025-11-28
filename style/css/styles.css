@@ -1,0 +1,27 @@
+body {
+    background: #f8fff4;
+    font-family: Arial, sans-serif;
+}
+
+.navbar {
+    background-color: #2d6a4f !important;
+}
+
+.navbar a {
+    color: white !important;
+    font-weight: bold;
+}
+
+.card {
+    border-radius: 12px;
+}
+
+.btn-green {
+    background: #2d6a4f;
+    color: white;
+}
+
+.btn-green:hover {
+    background: #1b4332;
+    color: white;
+}
