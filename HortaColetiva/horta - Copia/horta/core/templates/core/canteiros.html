@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Canteiros - HortaColetiva</title>
+  <link rel="stylesheet" href="canteiros.css">
+</head>
+
+<body>
+
+  <header>
+    <h1>Canteiros</h1>
+    <p>Gerencie os canteiros da horta</p>
+  </header>
+
+  <section class="content">
+
+    <!-- Formulário de Cadastro -->
+    <div class="box">
+      <h2>Cadastrar Novo Canteiro</h2>
+
+      <form id="formCanteiro">
+
+        <label>Localização:</label>
+        <input type="text" id="localizacao" required>
+
+        <label>Metros Quadrados (m²):</label>
+        <input type="number" id="metros" required>
+
+        <label>Nome do Proprietário:</label>
+        <input type="text" id="proprietario" required>
+
+        <button type="submit" class="btn salvar">Salvar Canteiro</button>
+      </form>
+    </div>
+
+    <!-- Lista de Canteiros -->
+    <div class="box">
+      <h2>Canteiros Registrados</h2>
+      <div id="listaCanteiros">
+        <p>Nenhum canteiro cadastrado ainda.</p>
+      </div>
+    </div>
+
+    <a href="index.html" class="btn voltar">← Voltar ao Dashboard</a>
+
+  </section>
+
+  <script>
+    let canteiros = JSON.parse(localStorage.getItem("canteiros")) || [];
+
+    function atualizarLista() {
+      const lista = document.getElementById("listaCanteiros");
+
+      if (canteiros.length === 0) {
+        lista.innerHTML = "<p>Nenhum canteiro cadastrado ainda.</p>";
+        return;
+      }
+
+      lista.innerHTML = "";
+
+      canteiros.forEach((c, index) => {
+        const item = document.createElement("div");
+        item.classList.add("canteiro-item");
+
+        item.innerHTML = `
+          <p><strong>Localização:</strong> ${c.localizacao}</p>
+          <p><strong>Área:</strong> ${c.metros} m²</p>
+          <p><strong>Proprietário:</strong> ${c.proprietario}</p>
+
+          <div class="acoes">
+            <button onclick="editar(${index})" class="btn editar">Editar</button>
+            <button onclick="deletar(${index})" class="btn deletar">Excluir</button>
+          </div>
+        `;
+
+        lista.appendChild(item);
+      });
+    }
+
+    // SALVAR NOVO CANTEIRO
+    document.getElementById("formCanteiro").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const novo = {
+        localizacao: document.getElementById("localizacao").value,
+        metros: document.getElementById("metros").value,
+        proprietario: document.getElementById("proprietario").value
+      };
+
+      canteiros.push(novo);
+      localStorage.setItem("canteiros", JSON.stringify(canteiros));
+      atualizarLista();
+      this.reset();
+    });
+
+    // EDITAR
+    function editar(i) {
+      const novoLocal = prompt("Nova localização:", canteiros[i].localizacao);
+      const novoMetro = prompt("Novos metros quadrados:", canteiros[i].metros);
+      const novoProp = prompt("Novo proprietário:", canteiros[i].proprietario);
+
+      if (!novoLocal || !novoMetro || !novoProp) return;
+
+      canteiros[i] = {
+        localizacao: novoLocal,
+        metros: novoMetro,
+        proprietario: novoProp
+      };
+
+      localStorage.setItem("canteiros", JSON.stringify(canteiros));
+      atualizarLista();
+    }
+
+    // DELETAR
+    function deletar(i) {
+      if (confirm("Deseja realmente apagar este canteiro?")) {
+        canteiros.splice(i, 1);
+        localStorage.setItem("canteiros", JSON.stringify(canteiros));
+        atualizarLista();
+      }
+    }
+
+    atualizarLista();
+  </script>
+
+</body>
+</html>

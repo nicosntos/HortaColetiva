@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Relatórios - HortaColetiva</title>
+  <link rel="stylesheet" href="relatorios.css">
+
+  <!-- jsPDF CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+
+<body>
+
+  <header>
+    <h1>Gerar Relatórios</h1>
+    <p>Escolha um tipo de relatório e gere o PDF com um clique</p>
+  </header>
+
+  <section class="content">
+
+    <div class="box">
+      <h2>Selecione o Tipo de Relatório</h2>
+
+      <select id="tipoRelatorio" onchange="carregarOpcoes()">
+        <option value="">-- Escolha uma opção --</option>
+        <option value="canteiros">Canteiros</option>
+        <option value="mutiroes">Mutirões</option>
+        <option value="producoes">Produções</option>
+      </select>
+
+      <div id="areaSelecao"></div>
+
+      <button onclick="gerarPDF()" class="btn gerar" id="btnGerar" style="display:none;">
+        Gerar PDF
+      </button>
+    </div>
+
+    <a href="index.html" class="btn voltar">← Voltar ao Dashboard</a>
+
+  </section>
+
+  <script>
+    function carregarOpcoes() {
+      const tipo = document.getElementById("tipoRelatorio").value;
+      const area = document.getElementById("areaSelecao");
+      const btn = document.getElementById("btnGerar");
+
+      area.innerHTML = "";
+      btn.style.display = "none";
+
+      if (!tipo) return;
+
+      const dados = JSON.parse(localStorage.getItem(tipo)) || [];
+
+      if (dados.length === 0) {
+        area.innerHTML = "<p>Nenhum registro encontrado.</p>";
+        return;
+      }
+
+      let html = "<h3>Selecione um registro:</h3>";
+      html += "<select id='itemSelecionado'>";
+
+      dados.forEach((item, i) => {
+        if (tipo === "canteiros") {
+          html += `<option value="${i}">${item.nome} - ${item.localizacao}</option>`;
+        }
+        if (tipo === "mutiroes") {
+          html += `<option value="${i}">${item.nome} - ${item.localizacao}</option>`;
+        }
+        if (tipo === "producoes") {
+          html += `<option value="${i}">${item.alimentos} - ${item.coordenador}</option>`;
+        }
+      });
+
+      html += "</select>";
+      area.innerHTML = html;
+      btn.style.display = "inline-block";
+    }
+
+    function gerarPDF() {
+      const tipo = document.getElementById("tipoRelatorio").value;
+      const index = document.getElementById("itemSelecionado").value;
+      const dados = JSON.parse(localStorage.getItem(tipo));
+
+      if (!dados || dados.length === 0) return;
+
+      const item = dados[index];
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      // TÍTULO
+      doc.setFont("Helvetica", "bold");
+      doc.setFontSize(18);
+      doc.text("Relatório - Horta Comunitária", 20, 20);
+
+      doc.setFontSize(14);
+      doc.text("Tipo de Relatório: " + tipo.toUpperCase(), 20, 35);
+
+      doc.setFont("Helvetica", "normal");
+      doc.setFontSize(12);
+
+      let y = 55;
+
+      // DADOS
+      for (let chave in item) {
+        doc.text(`${chave.toUpperCase()}: ${item[chave]}`, 20, y);
+        y += 10;
+      }
+
+      // ADICIONA TABELA NUTRICIONAL SE FOR PRODUÇÃO
+      if (tipo === "producoes") {
+        y += 10;
+        doc.setFont("Helvetica", "bold");
+        doc.text("Tabela Nutricional", 20, y);
+        doc.setFont("Helvetica", "normal");
+
+        y += 10;
+
+        const tabela = [
+          ["Nutriente", "Quantidade por 100g"],
+          ["Calorias", "50 kcal"],
+          ["Carboidratos", "11 g"],
+          ["Proteínas", "1.2 g"],
+          ["Gorduras Totais", "0.3 g"],
+          ["Fibras", "2 g"],
+          ["Sódio", "5 mg"]
+        ];
+
+        tabela.forEach(linha => {
+          doc.text(`${linha[0]}: ${linha[1]}`, 20, y);
+          y += 8;
+        });
+      }
+
+      doc.save(`relatorio_${tipo}_${Date.now()}.pdf`);
+      alert("PDF gerado com sucesso!");
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,121 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: #eaf8ec;
+  }
+  
+  /* ----- HEADER ----- */
+  header {
+    background: #2e8b57;
+    color: white;
+    padding: 30px 0;
+    text-align: center;
+  }
+  
+  header h1 {
+    font-size: 32px;
+    margin-bottom: 8px;
+  }
+  
+  /* ----- CONTEÚDO ----- */
+  .content {
+    margin: 40px auto;
+    width: 70%;
+    text-align: center;
+  }
+  
+  .box {
+    background: white;
+    padding: 25px;
+    margin-bottom: 30px;
+    border-radius: 12px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  }
+  
+  .box h2 {
+    color: #2e8b57;
+    margin-bottom: 20px;
+  }
+  
+  /* Formulário */
+  form {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+  }
+  
+  label {
+    font-weight: bold;
+    margin-top: 10px;
+  }
+  
+  input {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    margin-top: 5px;
+    margin-bottom: 10px;
+  }
+  
+  /* Botões */
+  .btn {
+    padding: 10px 16px;
+    border-radius: 8px;
+    color: white;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .salvar {
+    background: #2e8b57;
+  }
+  
+  .salvar:hover {
+    background: #256d46;
+  }
+  
+  .voltar {
+    background: #2e8b57;
+    margin-top: 20px;
+    display: inline-block;
+  }
+  
+  .voltar:hover {
+    background: #1f5c38;
+  }
+  
+  .editar {
+    background: #3a8fd1;
+  }
+  
+  .editar:hover {
+    background: #2d70a8;
+  }
+  
+  .deletar {
+    background: #e94444;
+  }
+  
+  .deletar:hover {
+    background: #c53030;
+  }
+  
+  /* Lista de canteiros */
+  .canteiro-item {
+    background: #f6fff6;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    text-align: left;
+    border: 1px solid #cdeccd;
+  }
+  
+  .acoes {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+  }
+  

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - HortaColetiva</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <header>
+    <div class="header-content">
+      <div>
+        <h1 id="titulo">Bem-vindo!</h1>
+        <p id="cargo"></p>
+      </div>
+
+      <button class="logout-btn" onclick="logout()">Sair</button>
+    </div>
+  </header>
+
+  <section class="stats">
+    <div class="card">
+      <h2>Canteiros Ativos</h2>
+      <p id="canteirosTotal">0</p>
+      <span>Total de canteiros</span>
+    </div>
+
+    <div class="card">
+      <h2>Mutirões</h2>
+      <p id="mutiroesTotal">0</p>
+      <span>Atividades agendadas</span>
+    </div>
+
+    <div class="card">
+      <h2>Produção Total</h2>
+      <p id="producaoTotal">0 kg</p>
+      <span>Colheitas registradas</span>
+    </div>
+
+    <div class="card">
+      <h2>Famílias Beneficiadas</h2>
+      <p id="familiasTotal">0</p>
+      <span>Baseado na produção (1 a cada 5 kg)</span>
+    </div>
+  </section>
+
+  <section class="actions">
+    <div class="action">
+      <h3>Canteiros</h3>
+      <p>Gerencie os canteiros da horta</p>
+      <a class="btn" href="canteiros.html">Acessar Canteiros</a>
+    </div>
+
+    <div class="action">
+      <h3>Mutirões</h3>
+      <p>Organize e participe de mutirões</p>
+      <a class="btn" href="mutiroes.html">Acessar Mutirões</a>
+    </div>
+
+    <div class="action">
+      <h3>Produções</h3>
+      <p>Registre colheitas e produções</p>
+      <a class="btn" href="producoes.html">Acessar Produções</a>
+    </div>
+
+    <div class="action">
+      <h3>Relatórios</h3>
+      <p>Gere relatórios em PDF</p>
+      <a class="btn" href="relatorios.html">Acessar Relatórios</a>
+    </div>
+  </section>
+
+  <script>
+    // --- AUTENTICAÇÃO ---
+    const usuario = localStorage.getItem("usuario");
+    const cargo = localStorage.getItem("cargo");
+
+    if (!usuario || !cargo) {
+      window.location.href = "login.html";
+    }
+
+    document.getElementById("titulo").innerText = `Bem-vindo, ${usuario}!`;
+    document.getElementById("cargo").innerText =
+      cargo === "coordenador" ? "Perfil: Coordenador" : "Perfil: Voluntário";
+
+    function logout() {
+      localStorage.removeItem("usuario");
+      localStorage.removeItem("cargo");
+      window.location.href = "login.html";
+    }
+
+    // ----- FUNÇÃO AUXILIAR PARA LER NÚMEROS (trata vírgula e strings)
+    function parseNumber(value) {
+      if (typeof value === 'number') return value;
+      if (!value) return 0;
+      // remove espaços e substitui vírgula por ponto
+      const s = String(value).trim().replace(',', '.');
+      const v = parseFloat(s);
+      return isNaN(v) ? 0 : v;
+    }
+
+    // --- ATUALIZAÇÃO DO DASHBOARD ---
+    function atualizarDashboard() {
+      const canteiros = JSON.parse(localStorage.getItem("canteiros")) || [];
+      const mutiroes = JSON.parse(localStorage.getItem("mutiroes")) || [];
+      const producoes = JSON.parse(localStorage.getItem("producoes")) || [];
+
+      // Canteiros
+      document.getElementById("canteirosTotal").innerText = canteiros.length;
+
+      // Mutirões
+      document.getElementById("mutiroesTotal").innerText = mutiroes.length;
+
+      // Produção Total (soma das quantidades)
+      let totalProducao = 0;
+
+      producoes.forEach(p => {
+        // tentamos várias chaves possíveis para compatibilidade:
+        // quantidade, quantidadePlantada, quantidade_colhida, quantidadePlantadaKg, qtd
+        totalProducao += parseNumber(p.quantidade)
+                     + 0; // manter compatibilidade em caso p.quantidade undefined
+      });
+
+      // Se a estrutura usa outro nome (por segurança, tenta outras chaves)
+      if (totalProducao === 0) {
+        producoes.forEach(p => {
+          totalProducao += parseNumber(p.quantidadePlantada);
+          totalProducao += parseNumber(p.quantidade_colhida);
+          totalProducao += parseNumber(p.qtd);
+          totalProducao += parseNumber(p.quantidadePlantadaKg);
+        });
+      }
+
+      // formatar com 1 ou 0 decimais conforme necessário
+      const formatted = Number.isInteger(totalProducao) ? `${totalProducao} kg` : `${totalProducao.toFixed(2)} kg`;
+      document.getElementById("producaoTotal").innerText = formatted;
+
+      // Famílias beneficiadas (1 a cada 5 kg)
+      const familias = Math.floor(totalProducao / 5);
+      document.getElementById("familiasTotal").innerText = familias;
+
+      // Salva para uso futuro (opcional)
+      localStorage.setItem("familias", String(familias));
+      localStorage.setItem("producaoTotal", String(totalProducao));
+    }
+
+    // Atualiza na carga inicial
+    atualizarDashboard();
+
+    // Atualiza sempre que a janela volta do foco (útil se vc cadastrou em outra aba)
+    window.addEventListener('focus', atualizarDashboard);
+
+    // Também escuta evento 'storage' para atualizações vindas de outra aba
+    window.addEventListener('storage', function(e) {
+      if (['producoes','canteiros','mutiroes'].includes(e.key)) {
+        atualizarDashboard();
+      }
+    });
+  </script>
+
+</body>
+</html>

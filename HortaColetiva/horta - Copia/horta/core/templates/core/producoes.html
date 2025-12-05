@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Produções - HortaColetiva</title>
+  <link rel="stylesheet" href="producoes.css">
+</head>
+
+<body>
+
+  <header>
+    <h1>Produções da Horta</h1>
+    <p>Gerencie tudo o que foi plantado e colhido</p>
+  </header>
+
+  <section class="content">
+
+    <!-- Formulário de Cadastro -->
+    <div class="box">
+      <h2>Cadastrar Nova Produção</h2>
+
+      <form id="formProducao">
+
+        <label>Alimentos Plantados/Colhidos:</label>
+        <input type="text" id="alimentos" required>
+
+        <label>Quantidade Plantada (kg/unidades):</label>
+        <input type="number" id="quantidade" required>
+
+        <label>Previsão de Colheita:</label>
+        <input type="date" id="previsao" required>
+
+        <label>Data de Início da Produção:</label>
+        <input type="date" id="inicio" required>
+
+        <label>Nome do Coordenador:</label>
+        <input type="text" id="coordenador" required>
+
+        <button type="submit" class="btn salvar">Salvar Produção</button>
+      </form>
+    </div>
+
+    <!-- Lista -->
+    <div class="box">
+      <h2>Produções Registradas</h2>
+      <div id="listaProducoes">
+        <p>Nenhuma produção cadastrada ainda.</p>
+      </div>
+    </div>
+
+    <a href="index.html" class="btn voltar">← Voltar ao Dashboard</a>
+
+  </section>
+
+  <script>
+    let producoes = JSON.parse(localStorage.getItem("producoes")) || [];
+
+    function atualizarLista() {
+      const lista = document.getElementById("listaProducoes");
+
+      if (producoes.length === 0) {
+        lista.innerHTML = "<p>Nenhuma produção cadastrada ainda.</p>";
+        return;
+      }
+
+      lista.innerHTML = "";
+
+      producoes.forEach((p, index) => {
+        const item = document.createElement("div");
+        item.classList.add("producao-item");
+
+        item.innerHTML = `
+          <p><strong>Alimentos:</strong> ${p.alimentos}</p>
+          <p><strong>Quantidade:</strong> ${p.quantidade}</p>
+          <p><strong>Previsão de Colheita:</strong> ${p.previsao}</p>
+          <p><strong>Início da Produção:</strong> ${p.inicio}</p>
+          <p><strong>Coordenador:</strong> ${p.coordenador}</p>
+
+          <div class="acoes">
+            <button onclick="editar(${index})" class="btn editar">Editar</button>
+            <button onclick="deletar(${index})" class="btn deletar">Excluir</button>
+          </div>
+        `;
+
+        lista.appendChild(item);
+      });
+    }
+
+    // SALVAR
+    document.getElementById("formProducao").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const novo = {
+        alimentos: document.getElementById("alimentos").value,
+        quantidade: document.getElementById("quantidade").value,
+        previsao: document.getElementById("previsao").value,
+        inicio: document.getElementById("inicio").value,
+        coordenador: document.getElementById("coordenador").value
+      };
+
+      producoes.push(novo);
+      localStorage.setItem("producoes", JSON.stringify(producoes));
+      atualizarLista();
+      this.reset();
+    });
+
+    // EDITAR
+    function editar(i) {
+      const editado = { ...producoes[i] };
+
+      editado.alimentos = prompt("Alimentos:", editado.alimentos);
+      editado.quantidade = prompt("Quantidade:", editado.quantidade);
+      editado.previsao = prompt("Previsão de colheita:", editado.previsao);
+      editado.inicio = prompt("Data de início:", editado.inicio);
+      editado.coordenador = prompt("Coordenador:", editado.coordenador);
+
+      if (!editado.alimentos) return;
+
+      producoes[i] = editado;
+      localStorage.setItem("producoes", JSON.stringify(producoes));
+      atualizarLista();
+    }
+
+    // DELETAR
+    function deletar(i) {
+      if (confirm("Deseja apagar esta produção?")) {
+        producoes.splice(i, 1);
+        localStorage.setItem("producoes", JSON.stringify(producoes));
+        atualizarLista();
+      }
+    }
+
+    atualizarLista();
+  </script>
+
+</body>
+</html>

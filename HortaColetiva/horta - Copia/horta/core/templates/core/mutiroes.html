@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Mutirões - HortaColetiva</title>
+  <link rel="stylesheet" href="mutiroes.css">
+</head>
+
+<body>
+
+  <header>
+    <h1>Mutirões</h1>
+    <p>Gerencie os mutirões comunitários</p>
+  </header>
+
+  <section class="content">
+
+    <!-- Formulário de Cadastro -->
+    <div class="box">
+      <h2>Cadastrar Novo Mutirão</h2>
+
+      <form id="formMutirao">
+
+        <label>Nome do Mutirão:</label>
+        <input type="text" id="nome" required>
+
+        <label>Localização:</label>
+        <input type="text" id="localizacao" required>
+
+        <label>Nome do Coordenador:</label>
+        <input type="text" id="coordenador" required>
+
+        <label>Quantidade de Inscritos:</label>
+        <input type="number" id="inscritos" required>
+
+        <label>Horário de Início:</label>
+        <input type="time" id="inicio" required>
+
+        <label>Horário de Término:</label>
+        <input type="time" id="fim" required>
+
+        <button type="submit" class="btn salvar">Salvar Mutirão</button>
+      </form>
+    </div>
+
+    <!-- Lista -->
+    <div class="box">
+      <h2>Mutirões Cadastrados</h2>
+      <div id="listaMutiroes">
+        <p>Nenhum mutirão cadastrado ainda.</p>
+      </div>
+    </div>
+
+    <a href="index.html" class="btn voltar">← Voltar ao Dashboard</a>
+
+  </section>
+
+  <script>
+    let mutiroes = JSON.parse(localStorage.getItem("mutiroes")) || [];
+
+    function atualizarLista() {
+      const lista = document.getElementById("listaMutiroes");
+
+      if (mutiroes.length === 0) {
+        lista.innerHTML = "<p>Nenhum mutirão cadastrado ainda.</p>";
+        return;
+      }
+
+      lista.innerHTML = "";
+
+      mutiroes.forEach((m, index) => {
+        const item = document.createElement("div");
+        item.classList.add("mutirao-item");
+
+        item.innerHTML = `
+          <p><strong>Nome:</strong> ${m.nome}</p>
+          <p><strong>Localização:</strong> ${m.localizacao}</p>
+          <p><strong>Coordenador:</strong> ${m.coordenador}</p>
+          <p><strong>Inscritos:</strong> ${m.inscritos}</p>
+          <p><strong>Início:</strong> ${m.inicio}</p>
+          <p><strong>Término:</strong> ${m.fim}</p>
+
+          <div class="acoes">
+            <button onclick="editar(${index})" class="btn editar">Editar</button>
+            <button onclick="deletar(${index})" class="btn deletar">Excluir</button>
+          </div>
+        `;
+
+        lista.appendChild(item);
+      });
+    }
+
+    // SALVAR
+    document.getElementById("formMutirao").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const novo = {
+        nome: document.getElementById("nome").value,
+        localizacao: document.getElementById("localizacao").value,
+        coordenador: document.getElementById("coordenador").value,
+        inscritos: document.getElementById("inscritos").value,
+        inicio: document.getElementById("inicio").value,
+        fim: document.getElementById("fim").value
+      };
+
+      mutiroes.push(novo);
+      localStorage.setItem("mutiroes", JSON.stringify(mutiroes));
+      atualizarLista();
+      this.reset();
+    });
+
+    // EDITAR
+    function editar(i) {
+      const editado = { ...mutiroes[i] };
+
+      editado.nome = prompt("Novo nome:", editado.nome);
+      editado.localizacao = prompt("Nova localização:", editado.localizacao);
+      editado.coordenador = prompt("Novo coordenador:", editado.coordenador);
+      editado.inscritos = prompt("Nova quantidade de inscritos:", editado.inscritos);
+      editado.inicio = prompt("Novo horário de início:", editado.inicio);
+      editado.fim = prompt("Novo horário de término:", editado.fim);
+
+      if (!editado.nome) return;
+
+      mutiroes[i] = editado;
+      localStorage.setItem("mutiroes", JSON.stringify(mutiroes));
+      atualizarLista();
+    }
+
+    // DELETAR
+    function deletar(i) {
+      if (confirm("Deseja apagar este mutirão?")) {
+        mutiroes.splice(i, 1);
+        localStorage.setItem("mutiroes", JSON.stringify(mutiroes));
+        atualizarLista();
+      }
+    }
+
+    atualizarLista();
+  </script>
+
+</body>
+</html>

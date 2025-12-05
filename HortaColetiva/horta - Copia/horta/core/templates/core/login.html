@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - HortaColetiva</title>
+  <link rel="stylesheet" href="login.css">
+</head>
+<body>
+
+  <div class="login-container">
+    <h2>Login</h2>
+
+    <label for="user">Usuário:</label>
+    <input type="text" id="user" placeholder="Digite seu nome">
+
+    <label for="role">Tipo de Acesso:</label>
+    <select id="role">
+      <option value="voluntario">Voluntário</option>
+      <option value="coordenador">Coordenador</option>
+    </select>
+
+    <button onclick="logar()">Entrar</button>
+  </div>
+
+  <script>
+    function logar() {
+      const nome = document.getElementById("user").value;
+      const role = document.getElementById("role").value;
+
+      if (nome.trim() === "") {
+        alert("Digite um nome!");
+        return;
+      }
+
+      localStorage.setItem("usuario", nome);
+      localStorage.setItem("cargo", role);
+
+      window.location.href = "index.html";
+    }
+  </script>
+
+</body>
+</html>
