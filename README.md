@@ -1,2 +1,7 @@
 # HortaColetiva
 projeto em Django + Python
+
+NICOLAS DO VALE
+CAROLINA MELO
+GENIDY LAURENTINO
+MOISES MAURICIO
